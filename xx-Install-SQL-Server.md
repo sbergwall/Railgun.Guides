@@ -207,3 +207,97 @@ This is used when sending mail from SQL Server.
 ```powershell
 Set-DbaSpConfigure -Name DatabaseMailEnabled -Value 1 -SqlInstance $(hostname)
 ```
+
+### Configure Model Database
+
+The Model database should be configured to 256MB for data files and 128MB for log files. This is a soft recommendation and can change depending on system, but this is better than the default.
+
+```powershell
+$sql = @" 
+USE [master]
+GO
+ALTER DATABASE [model] MODIFY FILE ( NAME = N'modeldev', SIZE = 512000KB , FILEGROWTH = 262144KB )
+GO
+ALTER DATABASE [model] MODIFY FILE ( NAME = N'modellog', SIZE = 256000KB , FILEGROWTH = 131072KB )
+GO
+"@
+Invoke-DbaQuery -Database model -Query $sql
+```
+
+### SQLTools database
+
+This database will contain our tools and scripts, including Ola Hallengrens Maintenance Solutions.
+
+```powershell
+New-DbaDatabase  -Name SQLTools
+
+ComputerName       : SP01SQL01TST
+InstanceName       : MSSQLSERVER
+SqlInstance        : SP01SQL01TST
+Name               : SQLTools
+Status             : Normal
+IsAccessible       : True
+RecoveryModel      : Full
+LogReuseWaitStatus : Nothing
+SizeMB             : 125
+Compatibility      : Version140
+Collation          : Finnish_Swedish_CI_AS
+Owner              : LTBLEKINGE\si2020adm
+LastFullBackup     : 0001-01-01 00:00:00
+LastDiffBackup     : 0001-01-01 00:00:00
+LastLogBackup      : 0001-01-01 00:00:00
+```
+
+#### Installs or updates the First Responder Kit stored procedures.
+[Link](https://github.com/BrentOzarULTD/SQL-Server-First-Responder-Kit/tree/master)
+
+```Powershell
+Install-DbaFirstResponderKit -Force -Database SQLTools -Verbose
+```
+
+#### Automatically installs or updates sp_WhoisActive by Adam Machanic.
+```Powershell
+Install-DbaWhoIsActive -Database SQLTools
+```
+
+```powershell
+$sql = @"
+USE [msdb]
+GO
+EXEC msdb.dbo.sp_set_sqlagent_properties @jobhistory_max_rows=5000,
+		@jobhistory_max_rows_per_job=200
+GO
+"@
+Invoke-DbaQuery -Database msdb -Query $sql
+```
+
+## SQL Server Agent
+
+### Increase Job History Max Rows and Max Rows per Job
+
+```powershell
+$sql = @"
+USE [msdb]
+GO
+EXEC msdb.dbo.sp_set_sqlagent_properties @jobhistory_max_rows=5000,
+		@jobhistory_max_rows_per_job=200
+GO
+"@
+Invoke-DbaQuery -Database msdb -Query $sql
+```
+
+### New Dba Operator
+
+```powershell
+$sql = @"
+USE [msdb]
+GO
+EXEC msdb.dbo.sp_add_operator @name=N'Dba',
+		@enabled=1,
+		@pager_days=0,
+		@email_address=N'simon.bergwall@regionblekinge.se'
+GO
+"@
+
+Invoke-DbaQuery -Database msdb -Query $sql
+````
