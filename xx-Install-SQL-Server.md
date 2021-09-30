@@ -221,7 +221,7 @@ GO
 ALTER DATABASE [model] MODIFY FILE ( NAME = N'modellog', SIZE = 256000KB , FILEGROWTH = 131072KB )
 GO
 "@
-Invoke-DbaQuery -Database model -Query $sql
+Invoke-DbaQuery -Database model -Query $sql -SqlInstance $(hostname)
 ```
 
 ### SQLTools database
@@ -229,46 +229,19 @@ Invoke-DbaQuery -Database model -Query $sql
 This database will contain our tools and scripts, including Ola Hallengrens Maintenance Solutions.
 
 ```powershell
-New-DbaDatabase  -Name SQLTools
-
-ComputerName       : SP01SQL01TST
-InstanceName       : MSSQLSERVER
-SqlInstance        : SP01SQL01TST
-Name               : SQLTools
-Status             : Normal
-IsAccessible       : True
-RecoveryModel      : Full
-LogReuseWaitStatus : Nothing
-SizeMB             : 125
-Compatibility      : Version140
-Collation          : Finnish_Swedish_CI_AS
-Owner              : LTBLEKINGE\si2020adm
-LastFullBackup     : 0001-01-01 00:00:00
-LastDiffBackup     : 0001-01-01 00:00:00
-LastLogBackup      : 0001-01-01 00:00:00
+New-DbaDatabase  -Name SQLTools -SqlInstance $(hostname)
 ```
 
 #### Installs or updates the First Responder Kit stored procedures.
 [Link](https://github.com/BrentOzarULTD/SQL-Server-First-Responder-Kit/tree/master)
 
 ```Powershell
-Install-DbaFirstResponderKit -Force -Database SQLTools -Verbose
+Install-DbaFirstResponderKit -Force -Database SQLTools -SqlInstance $(hostname) -Verbose
 ```
 
 #### Automatically installs or updates sp_WhoisActive by Adam Machanic.
 ```Powershell
-Install-DbaWhoIsActive -Database SQLTools
-```
-
-```powershell
-$sql = @"
-USE [msdb]
-GO
-EXEC msdb.dbo.sp_set_sqlagent_properties @jobhistory_max_rows=5000,
-		@jobhistory_max_rows_per_job=200
-GO
-"@
-Invoke-DbaQuery -Database msdb -Query $sql
+Install-DbaWhoIsActive -Database SQLTools -SqlInstance $(hostname)
 ```
 
 ## SQL Server Agent
@@ -283,7 +256,7 @@ EXEC msdb.dbo.sp_set_sqlagent_properties @jobhistory_max_rows=5000,
 		@jobhistory_max_rows_per_job=200
 GO
 "@
-Invoke-DbaQuery -Database msdb -Query $sql
+Invoke-DbaQuery -Database msdb -Query $sql -SqlInstance $(hostname)
 ```
 
 ### New Dba Operator
@@ -295,9 +268,9 @@ GO
 EXEC msdb.dbo.sp_add_operator @name=N'Dba',
 		@enabled=1,
 		@pager_days=0,
-		@email_address=N'simon.bergwall@regionblekinge.se'
+		@email_address=N'mail@domain.com'
 GO
 "@
 
-Invoke-DbaQuery -Database msdb -Query $sql
+Invoke-DbaQuery -Database msdb -Query $sql -SqlInstance $(hostname)
 ````
