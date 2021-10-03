@@ -1,0 +1,144 @@
+# Local Administrator Password Solution
+
+## Install LASP UI on local client
+
+```powershell
+$URLs = @('https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x64.msi','https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x86.msi')
+$Date = Get-Date -Format yyyyMMdd_hhmm
+$TempFolder = "C:\Temp_$Date"
+New-Item -Path $TempFolder -ItemType Directory -Force
+$URLs | foreach-object {
+
+    $fileName = Split-Path $_ -Leaf
+    $DestinationPath = Join-Path $TempFolder -ChildPath $fileName
+    Invoke-WebRequest -Uri $_ -OutFile $DestinationPath
+}
+
+Start-Process msiexec -ArgumentList "/i $TempFolder\LAPS.x64.msi ADDLOCAL=Management.UI,Management.PS,Management.ADMX /quiet /norestart" -Wait -NoNewWindow -PassThru
+```
+
+## File share AD groups
+Create the Domain groups used for allowing access to the file share where we will place the LAPS installation media
+
+```powershell 
+$AD_Group_R = @{
+    Name = 'FS-System-LAPS-RO'
+    SamAccountName = 'FS-System-LAPS-RO'
+    Description = 'Members allowed to read from Share \\fs01\System\LAPS'
+    DisplayName = 'FS-System-LAPS-RO'
+    GroupCategory = 'Security'
+    GroupScope= 'Universal'
+    Path = 'OU=File-Services,OU=SecurityGroups,OU=Groups,OU=modc,DC=modc,DC=se'
+}
+New-ADGroup @AD_Group_R
+
+$AD_Group_M = @{
+    Name = 'FS-System-LAPS-M'
+    SamAccountName = 'FS-System-LAPS-M'
+    Description = 'Members with full access to Share \\fs01\System\LAPS'
+    DisplayName = 'FS-System-LAPS-M'
+    GroupCategory = 'Security'
+    GroupScope= 'Universal'
+    Path = 'OU=File-Services,OU=SecurityGroups,OU=Groups,OU=modc,DC=modc,DC=se'
+}
+New-ADGroup @AD_Group_M
+
+
+Add-ADGroupMember -Identity $AD_Group_R.SamAccountName -Members 'Domain users' 
+Add-ADGroupMember -Identity $AD_Group_M.SamAccountName -Members 'Domain admins' 
+```
+
+## Domain groups for reading LAPS attributes in AD
+Create groups for allowing read access to the LAPS attribute in AD for servers and workstations
+
+```powershell 
+$ServerGroupProps = @{
+    Name = 'LAPS-Server-RO'
+    SamAccountName = 'LAPS-Server-RO'
+    Description = 'Members allowed to read LAPS attributes for Servers'
+    DisplayName = 'LAPS-Server-RO'
+    GroupCategory = 'Security'
+    GroupScope= 'Universal'
+    Path = 'OU=LAPS,OU=SecurityGroups,OU=Groups,OU=modc,DC=modc,DC=se'
+}
+New-ADGroup @ServerGroupProps
+
+$WorkstationGroupProps = @{
+    Name = 'LAPS-Workstation-RO'
+    SamAccountName = 'LAPS-Workstation-RO'
+    Description = 'Members allowed to read LAPS attributes for Workstations'
+    DisplayName = 'LAPS-Workstation-RO'
+    GroupCategory = 'Security'
+    GroupScope= 'Universal'
+    Path = 'OU=LAPS,OU=SecurityGroups,OU=Groups,OU=modc,DC=modc,DC=se'
+}
+New-ADGroup @WorkstationGroupProps
+```
+
+Create Folder in File share where Media for LAPS will be located and assign correct ACL
+
+```powershell
+$ShareName = "LAPS"
+$FilePath = "\\fs01\System\$ShareName"
+New-Item -Path $FilePath -ItemType Directory -Force
+
+$Permission=get-acl -Path $FilePath
+$Permission.SetAccessRuleProtection($true,$true)
+
+Set-Acl -Path $FilePath -AclObject $Permission
+
+$AclWrite = Get-Acl -Path $FilePath
+$ArWrite = New-Object System.Security.AccessControl.FileSystemAccessRule('modc\FS-System-LAPS-M', 'Modify','ContainerInherit,ObjectInherit','None','Allow')
+$AclWrite.SetAccessRule($ArWrite)
+Set-Acl -Path $FilePath -AclObject $AclWrite
+
+$AclRead = Get-Acl -Path $FilePath
+$ArRead = New-Object System.Security.AccessControl.FileSystemAccessRule('modc\FS-System-LAPS-RO', 'ReadAndExecute','ContainerInherit,ObjectInherit','None','Allow')
+$AclRead.SetAccessRule($ArRead)
+Set-Acl -Path $FilePath -AclObject $AclRead 
+
+New-Item -Path $FilePath -Name Media -ItemType Directory -Force
+```
+
+Copy the installation media to the newly created file share for LAPS
+
+```powershell
+$TempFolder = "C:\Temp_$Date"
+$ShareName = "LAPS"
+$FilePath = "\\fs01\System\$ShareName\Media"
+
+Get-ChildItem -Path $TempFolder | Copy-Item -Destination $FilePath -Recurse
+```
+
+Extend schema
+
+```powershell
+Import-Module AdmPwd.PS
+Update-AdmPwdADSchema
+```
+
+Ensure that the systems which will be managed by LAPS will be able to update the new attributes on their active directory computer account object and configure the rights for a user (or members of a group) to have the rights to read the password from the confidential attributes as well as writing to the password expiration date attribute.
+
+```powershell
+$OUsServers = @('OU=Tier 0,OU=Servers,OU=Computers,OU=modc,DC=modc,DC=se','OU=Tier 1,OU=Servers,OU=Computers,OU=modc,DC=modc,DC=se')
+$OUsWorkstations =@('OU=Workstations,OU=Computers,OU=modc,DC=modc,DC=se')
+
+$OUsServers | ForEach-Object {
+    Set-AdmPwdComputerSelfPermission -OrgUnit $_
+    Set-AdmPwdReadPasswordPermission -Identity $_ -AllowedPrincipals "LAPS-Server-RO"
+}
+
+
+$OUsWorkstations | ForEach-Object {
+    Set-AdmPwdComputerSelfPermission -OrgUnit $_
+    Set-AdmPwdReadPasswordPermission -Identity $_ -AllowedPrincipals "LAPS-Workstation-RO"
+}
+```
+
+Repeat as needed for your various locations throughout AD. If you mess up and need to undo the permission, you can right click the OU > Properties > Security Tab > Advanced button. There will be two ACLs you need to remove.
+
+## Create GPO for installation
+
+To install LAPS through GPO, we’ll be using Software Installation options that can be found here: Computer Configuration > Policies > Software Settings > Software Installation. Remember that software installation will occur only during machine logon time and only if network is connected and share is available.
+
+We can edit Computer Configuration > Policies > Administrative Templates > System > Logon > Always wait for the network at computer startup and logon and forcing Windows to wait for network connectivity before processing any GPO, but that can extend logon time.
