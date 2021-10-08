@@ -88,8 +88,8 @@ Variables that needs to be changed
   * $Path: The local path to the new directory
 
 ```powershell
-$shareName = "testnetag01"
-$Path = "C:\Witness\testnetag01"
+$shareName = "dbclun01"
+$Path = "D:\dbclun01\witness"
 
 New-Item -Path $Path -Type Directory
 New-SMBShare –Name $shareName –Path $Path –FullAccess Administrators -ReadAccess Users
@@ -114,7 +114,6 @@ $clustername = 'testnetdbcl01'
 $fileshare = '\\testnetquorum\testnetag01'
 
 New-Cluster -Name $clustername -Node $server1, $server2 -StaticAddress $clusterIPAddress -NoStorage -Verbose
-
 Set-ClusterQuorum -FileShareWitness $fileshare -Cluster $clustername -Verbose
 ```
 
