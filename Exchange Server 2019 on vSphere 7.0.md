@@ -4,6 +4,6 @@ VMware uses the terms virtual CPU (vCPU) and physical CPU (pCPU) to distinguish 
 
 Colons can be used to align columns.
 
-| Configuration Item        | Maximum Supported           |
-| Memory Per Exchange Server Instance      | 256 GB      |
-| Number of CPUs per Exchange Server Instance | 2 Sockets      |
+Configuration Item | Maximum Supported 
+Memory Per Exchange Server Instance | 256 GB
+Number of CPUs per Exchange Server Instance | 2 Sockets
