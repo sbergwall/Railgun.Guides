@@ -2,6 +2,6 @@ https://www.vmware.com/content/dam/digitalmarketing/vmware/en/pdf/solutions/busi
 
 VMware uses the terms virtual CPU (vCPU) and physical CPU (pCPU) to distinguish between the processors within the VM and the underlying physical processor cores.
 
-|Configuration Item   | Maximum Supported   |
-|Memory Per Exchange Server Instance   | 256 GB   |
-|Number of CPUs per Exchange Server Instance   | 2 Sockets   |
+| Configuration Item   |   Maximum Supported   |
+| Memory Per Exchange Server Instance   |   256 GB   |
+| Number of CPUs per Exchange Server Instance   |   2 Sockets   |
