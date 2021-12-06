@@ -21,4 +21,18 @@ While VMs using vNUMA may benefit from this option, the recommendation for these
  * Enabling CPU hot add for a VM on vSphere disables vNUMA for the VM. As Exchange Server does not benefit from either vNUMA or CPU hot add, VMware recommends that CPU hot add for an Exchange Server 2019 VM should not be enabled.
 
 
+# Windows Server 2019 WSFC Thresholds
+
+Verify that WSFC settings are as specified below:
+
+```
+PS> Get-Cluster | fl *subnet*,*history*
+
+CrossSubnetDelay          : 1000
+CrossSubnetThreshold      : 20
+PlumbAllCrossSubnetRoutes : 0
+SameSubnetDelay           : 1000
+SameSubnetThreshold       : 20
+RouteHistoryLength        : 40
+```
 
