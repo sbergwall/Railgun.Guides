@@ -69,3 +69,22 @@ Run the SharePoint prerequisite installer (prerequisiteinstaller.exe) on your se
 
 Run setup.exe as the farm installation account.
 
+## Configuration
+
+```powershell
+New-SPConfigurationDatabase -DatabaseName SP_Configuration -AdministrationContentDatabaseName SP_Administration -DatabaseServer DB -Passphrase (ConvertTo-SecureString "FarmPassphrase1" -AsPlainText -Force) -FarmCredentials (Get-Credential) -LocalServerRole SingleServerFarm -Verbose
+```
+
+## Central Administration
+
+Set up SPN for Central Administration 
+
+```powershell
+setspn -S HHTP/ca.modc.se modc\sp-farm
+```
+
+Create Central Administration with Kerberos and without TLS.
+
+```powershell
+New-SPCentralAdministration -WindowsAuthProvider Kerberos -SecureSocketsLayer:$false
+```
