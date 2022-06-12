@@ -138,4 +138,99 @@ on s.session_id = c.session_id
 WHERE HOST_NAME like 'SPSE%'
 ```
 
+## Managed Accounts
+
+Register the managed account we will be using for SharePoint.
+
+```powershell
+# SharePoint Service Application Pool Account
+$cred = Get-Credential -UserName "modc\sp-service" -Message "SharePoint Service Application Pool Account"
+New-SPManagedAccount -Credential $cred
+
+# SharePoint Web Application Pool Account
+$cred = Get-Credential -UserName "modc\sp-web" -Message "SharePoint Web Application Pool Account"
+New-SPManagedAccount -Credential $cred
+
+# Claims to Windows Token Service Account
+$cred = Get-Credential -UserName "modc\sp-c2wts" -Message "Claims to Windows Token Service Account"
+New-SPManagedAccount -Credential $cred
+```
+
+## Service Application Pool
+
+We will use a single application pool for all of our Service Applications.
+
+```powershell
+New-SPServiceApplicationPool -Name "SharePoint Web Services Default" -Account (Get-SPManagedAccount "modc\sp-service")
+```
+
+## Configure ULS and Usage Logs
+
+```powershell
+Set-SPDiagnosticConfig -DaysToKeepLogs 7 -LogDiskSpaceUsageGB 15 -LogMaxDiskSpaceUsageEnabled:$true -LogLocation C:\Logs\ULS
+Set-SPUsageService -UsageLogLocation C:\Logs\ULS\
+```
+
+## Claims to Windos Token Service
+
+The Claims to Windos Token Service needs local Administrator permissions. It also needs specific permissions. Start secpol-msc, add the Claims account to the following User Rights Assignments under Local Policies.
+
+- Act as part of the operating system
+- Impersonate a client after authentication
+- Log on as a service
+
+```powershell
+$sharePointServer = "spse"
+Invoke-Command -ScriptBlock {Add-LocalGroupMember -Group Administrators -Member "modc\sp-c2wts"} -ComputerName $sharePointServer
+```
+
+Configure Kerberos for the Claims account
+
+```powershell
+setspn.exe -S C2WTS/Dummy modc\sp-c2wts
+```
+
+Configure Claims account in SharePoint
+
+```powershell
+$account = Get-SPManagedAccount "modc\sp-c2wts"
+$farm = Get-SPFarm
+$svc =$farm.Services | where {$_.TypeName -eq "Claims to Windows Token Service"}
+$svcIdentity =$svc.ProcessIdentity
+$svcIdentity.CurrentIdentityType = [Microsoft.SharePoint.Administration.IdentityType]::SpecificUser
+$svcIdentity.Username =$account.Username
+$svcIdentity.Update()
+$svcIdentity.Deploy()
+```
+
+## Distributed Cache Service
+
+Configure Distributed Cache Service to run as the Service Application Pool account instead of the Farm account that is used by default.
+
+```powershell
+$acct = Get-SPManagedAccount "modc\sp-service"
+$farm=Get-SPFarm
+$svc = $farm.Services | where {$_.TypeName -eq "Distributed Cache"}
+$svc.ProcessIdentity.CurrentIdentityType = "SpecificUser"
+$svc.ProcessIdentity.ManagedAccount = $acct
+$svc.ProcessIdentity.Update()
+$svc.ProcessIdentity.Deploy()
+```
+
+For completing the identity change we need to stop, removeand add the Distributed Cache instance. 
+
+```powershell
+Stop-SPDistributedCacheServiceInstance -Graceful
+Remove-SPDistributedCacheServiceInstance
+Add-SPDistributedCacheServiceInstance
+```
+
+## Managed Metadata Service
+
+Provides taxonomies for end-users and for SharePoint services such as Search and User Profile.
+```powershell
+$sa = New-SPMetadataServiceApplication -Name "Managed Metadata Service" -DatabaseName "SP_ManagedMetadata" -ApplicationPool "SharePoint Web Services Default" -SyndicationErrorReportEnabled
+
+New-SPMetadataServiceApplicationProxy -Name "Managed Metadata Service" -ServiceApplication $sa -DefaultProxyGroup -ContentTypePushdownEnabled -DefaultKeywordTaxonomy -DefaultSiteCollectionTaxonomy
+```
 
