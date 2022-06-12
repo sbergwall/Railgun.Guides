@@ -53,11 +53,22 @@ New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" 
 ```
 
 portal Super User Account 
+```powershell
+$Name = "sp-superuser"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Portal Super User" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+```
 
 Portal supoer Readoner Account 
+```powershell
+$Name = "sp-superread"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Portal Super Reader" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+```
 
 Seach Crawl Account
-
+```powershell
+$Name = "sp-crawl"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Crawl Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+```
 
 ## Pre requirements
 
@@ -154,6 +165,10 @@ New-SPManagedAccount -Credential $cred
 # Claims to Windows Token Service Account
 $cred = Get-Credential -UserName "modc\sp-c2wts" -Message "Claims to Windows Token Service Account"
 New-SPManagedAccount -Credential $cred
+
+# SharePoint User Profile Service
+$cred = Get-Credential -UserName "modc\sp-sync" -Message "SharePoint User Profile Service"
+New-SPManagedAccount -Credential $cred
 ```
 
 ## Service Application Pool
@@ -206,7 +221,6 @@ $svcIdentity.Deploy()
 ## Distributed Cache Service
 
 Configure Distributed Cache Service to run as the Service Application Pool account instead of the Farm account that is used by default.
-
 ```powershell
 $acct = Get-SPManagedAccount "modc\sp-service"
 $farm=Get-SPFarm
@@ -218,7 +232,6 @@ $svc.ProcessIdentity.Deploy()
 ```
 
 For completing the identity change we need to stop, removeand add the Distributed Cache instance. 
-
 ```powershell
 Stop-SPDistributedCacheServiceInstance -Graceful
 Remove-SPDistributedCacheServiceInstance
@@ -236,7 +249,23 @@ New-SPMetadataServiceApplicationProxy -Name "Managed Metadata Service" -ServiceA
 
 ## Enterprise Search Service
 
+## User Profile Service
 
+Create the User Profile Service and Proxy
+```powershell
+$ups = New-SPProfileServiceApplication -name "User Profile Service Application" -ApplicationPool "SharePoint web services Default" -ProfileDBName "SP_Profile" -SocialDBName "SP_Social" -ProfileSyncDBName "SP_Sync"
+New-SPProfileServiceApplicationProxy -Name "User Profile Service Application" -ServiceApplication $ups -DefaultProxyGroup
+```
+
+Add the Crawl account to the admin permission for UPS
+```powershell
+$user = New-SPClaimsPrincipal "modc\sp-crawl" -IdentityType WindowsSamAccountName
+$security = Get-SPServiceApplicationSecurity $ups -Admin
+Grant-SPObjectSecurity $security $user "Retrieve People Data for Search Crawlers"
+Set-SPServiceApplicationSecurity $ups $security -Admin
+```
+
+Add the Sync account to domain permissions Replicating Directory Changes. Configure the domain connection needs to be done manually.
 
 ## Create Web Applications and root site collection
 
@@ -259,7 +288,7 @@ New-SPWebApplication -Name "SharePoint MySites" -HostHeader "sharepoint-my.modc.
 
 After creating the web application, verify that bindings in IIS are correct and the correct certificate are bound. 
 
-Add Managed Path for My Site and enable Sefl-service creation.
+Add Managed Path for My Site and enable Self-service creation.
 
 ```powershell
 New-SPManagedPath -RelativeURL "personal" -WebApplication "https://sharepoint-my.modc.se/"
@@ -310,10 +339,15 @@ $wa.Update()
 ```
 
 A iisreset is needed before the changes can apply.
-
 ```powershell
 foreach ($server in (Get-SPServer | where {$_.Role -ne "Invalid" -and $_.Role -ne "Search"})) {
     Write-Host "Resseting IIS on $($server.address)"
     iisreset $server.address /noforce
 }
+```
+
+My Site Configuration
+```powershell
+$sa =Get-SPServiceApplication | where {$_.TypeName -eq "User Profile Service Application"}
+Set-SPProfileServiceApplication -Identity $sa -MySiteHostLocation "https://sharepoint-my.modc.se/"
 ```
