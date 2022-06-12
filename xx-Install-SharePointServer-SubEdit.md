@@ -271,12 +271,49 @@ $wa.Update()
 Create the root site collection for Sharepoint and My Site.
 
 ```powershell
-New-SPSite -Url "https://sharepoint.modc.se/" -Template STS#0 -Name "Team Site" -OwnerAlias "modc\siber-da"
+New-SPSite -Url "https://sharepoint.modc.se/" -Template STS#3 -Name "Team Site" -OwnerAlias "modc\siber-da"
 New-SPSite -Url "https://sharepoint-my.modc.se/" -Template SPSMSITEHOST#0 -Name "Team Site" -OwnerAlias "modc\siber-da"
 ```
 
 Dont forget to create the A records in DNS.
 
 ```powershell
+Add-DnsServerResourceRecordA -Name "sharepoint" -IPv4Address 192.168.2.26 -ZoneName "modc.se" -ComputerName dc01
+Add-DnsServerResourceRecordA -Name "sharepoint-my" -IPv4Address 192.168.2.26 -ZoneName "modc.se" -ComputerName dc01
+```
 
+Configure the Portal Super User and Portal Super Reader. Start by creating the domain accounts and then add them to the Web Application.
+
+```powershell
+$Name = "sp-superread"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Portal Super Reader" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+
+$Name = "sp-superuser"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Portal Super User" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+
+$wa =Get-SPWebApplication https://sharepoint.modc.se/
+$wa.Properties["portalsuperuseraccount"] = "i:0#.w|modc\sp-superuser"
+$wa.Properties["portalsuperreaderaccount"] = "i:0#.w|modc\sp-superread"
+$wa.Update()
+
+
+$wa = Get-SPWebApplication "https://sharepoint.modc.se/"  
+$zp = $wa.ZonePolicies("Default")
+$policy = $zp.Add("i:0#.w|modc\sp-superuser","Portal Super User")
+$policyRole = $wa.PolicyRoles.GetSpecialRole("FullControl")
+$policy.PolicyRoleBindings.Add($policyRole)
+
+$policy = $zp.Add("i:0#.w|modc\sp-superread","Portal Super Reader")
+$policyRole = $wa.PolicyRoles.GetSpecialRole("FullRead")
+$policy.PolicyRoleBindings.Add($policyRole)
+$wa.Update()
+```
+
+A iisreset is needed before the changes can apply.
+
+```powershell
+foreach ($server in (Get-SPServer | where {$_.Role -ne "Invalid" -and $_.Role -ne "Search"})) {
+    Write-Host "Resseting IIS on $($server.address)"
+    iisreset $server.address /noforce
+}
 ```
