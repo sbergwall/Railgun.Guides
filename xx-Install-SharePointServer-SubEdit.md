@@ -351,3 +351,13 @@ My Site Configuration
 $sa =Get-SPServiceApplication | where {$_.TypeName -eq "User Profile Service Application"}
 Set-SPProfileServiceApplication -Identity $sa -MySiteHostLocation "https://sharepoint-my.modc.se/"
 ```
+
+## Custom Tiles 
+
+https://docs.microsoft.com/en-us/sharepoint/administration/custom-tiles-in-sharepoint-server-2016
+
+```powershell
+Enable-SPFeature -Identity CustomTiles -Url https://sharepoint.modc.se/ -Force
+```
+
+browse to https://sharepoint.modc.se/Lists/Custom%20Tiles/AllItems.aspx to access Custom tiles list.
