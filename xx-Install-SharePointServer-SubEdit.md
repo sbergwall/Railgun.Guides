@@ -80,11 +80,62 @@ New-SPConfigurationDatabase -DatabaseName SP_Configuration -AdministrationConten
 Set up SPN for Central Administration 
 
 ```powershell
-setspn -S HHTP/ca.modc.se modc\sp-farm
+setspn -S HTTP/ca.modc.se modc\sp-farm
 ```
 
 Create Central Administration with Kerberos and without TLS.
 
 ```powershell
-New-SPCentralAdministration -WindowsAuthProvider Kerberos -SecureSocketsLayer:$false
+New-SPCentralAdministration -WindowsAuthProvider Kerberos -SecureSocketsLayer:$True -Port 443
 ```
+
+Change default Alternative Access Mapping
+
+```powershell
+Set-SPAlternateUrl -Identity https://spse -Url https://ca.modc.se 
+```
+
+Create a Self Signed certificate if you dont have a PKI environment
+
+```powershell
+New-SelfSignedCertificate -DnsName "ca.modc.se" -CertStoreLocation "cert:\LocalMachine\My"
+```
+
+Validate in IIS Manager that the site for Central Administation is using the certificate and that SNI is enabled. 
+
+Create a A record in DNS for Central Administration
+
+```powershell
+Add-DnsServerResourceRecordA -Name ca -IPv4Address 192.168.2.26 -ZoneName "modc.se" -ComputerName dc01
+```
+
+## Enforce resource security on the local server.
+
+```powershell
+ Initialize-SPResourceSecurity
+ Install-SPFeature -AllExistingFeatures
+ Install-SPService
+ Install-SPHelpCollection -All
+ ```
+ 
+ ## SQL Kerberos Validation
+
+Sessions to the databases should be Kerberos. If they are showing as NTLM please investigate.
+
+ ```sql
+ select 
+	s.session_id,
+	c.connect_time,
+	s.login_time,
+	s.login_name,
+	c.protocol_type,
+	c.auth_scheme,
+	s.HOST_NAME,
+	s.program_name
+FROM sys.dm_exec_sessions s
+JOIN sys.dm_exec_connections c
+on s.session_id = c.session_id
+WHERE HOST_NAME like 'SPSE%'
+```
+
+
