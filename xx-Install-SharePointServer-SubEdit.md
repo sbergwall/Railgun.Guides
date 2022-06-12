@@ -49,7 +49,7 @@ New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" 
 User Profile Import Account
 ```powershell
 $Name = "sp-sync"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "Claims to Windows Token Service Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "User Profile Import Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 ```
 
 portal Super User Account 
@@ -234,3 +234,19 @@ $sa = New-SPMetadataServiceApplication -Name "Managed Metadata Service" -Databas
 New-SPMetadataServiceApplicationProxy -Name "Managed Metadata Service" -ServiceApplication $sa -DefaultProxyGroup -ContentTypePushdownEnabled -DefaultKeywordTaxonomy -DefaultSiteCollectionTaxonomy
 ```
 
+## Enterprise Search Service
+
+
+
+## Create Web Applications
+
+Set SPN and create web applications for SharePoint and My Site.
+
+```powershell
+setspn -S http://sharepoint.modc.se modc\sp-web
+setspn -S http://sharepoint-my.modc.se modc\sp-web
+
+$ap = New-SPAuthenticationProvider -DisableKerberos:$false
+New-SPWebApplication -Name "SharePoint" -HostHeader "sharepoint.modc.se" -Port 443 -ApplicationPool "SharePoint" -ApplicationPoolAccount (Get-SPManagedAccount "modc\sp-web") -SecureSocketsLayer:$true -AuthenticationProvider $ap -DatabaseName "SP_Content_SharePoint_1" -Verbose
+New-SPWebApplication -Name "SharePoint MySites" -HostHeader "sharepoint-my.modc.se" -Port 443 -ApplicationPool "SharePoint" -ApplicationPoolAccount (Get-SPManagedAccount "modc\sp-web") -SecureSocketsLayer:$true -AuthenticationProvider $ap -DatabaseName "SP_Content_SharePoint-My_1" -Verbose
+```
