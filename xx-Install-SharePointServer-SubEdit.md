@@ -238,7 +238,13 @@ New-SPMetadataServiceApplicationProxy -Name "Managed Metadata Service" -ServiceA
 
 
 
-## Create Web Applications
+## Create Web Applications and root site collection
+
+If you want to use a self-signed certificate for the sites run
+
+```powershell
+New-SelfSignedCertificate -DnsName "sharepoint.modc.se","sharepoint-my.modc.se" -CertStoreLocation "cert:\LocalMachine\My"
+```
 
 Set SPN and create web applications for SharePoint and My Site.
 
@@ -248,5 +254,29 @@ setspn -S http://sharepoint-my.modc.se modc\sp-web
 
 $ap = New-SPAuthenticationProvider -DisableKerberos:$false
 New-SPWebApplication -Name "SharePoint" -HostHeader "sharepoint.modc.se" -Port 443 -ApplicationPool "SharePoint" -ApplicationPoolAccount (Get-SPManagedAccount "modc\sp-web") -SecureSocketsLayer:$true -AuthenticationProvider $ap -DatabaseName "SP_Content_SharePoint_1" -Verbose
-New-SPWebApplication -Name "SharePoint MySites" -HostHeader "sharepoint-my.modc.se" -Port 443 -ApplicationPool "SharePoint" -ApplicationPoolAccount (Get-SPManagedAccount "modc\sp-web") -SecureSocketsLayer:$true -AuthenticationProvider $ap -DatabaseName "SP_Content_SharePoint-My_1" -Verbose
+New-SPWebApplication -Name "SharePoint MySites" -HostHeader "sharepoint-my.modc.se" -Port 443 -ApplicationPool "SharePoint" -SecureSocketsLayer:$true -AuthenticationProvider $ap -DatabaseName "SP_Content_SharePoint-My_1" -Verbose
+```
+
+After creating the web application, verify that bindings in IIS are correct and the correct certificate are bound. 
+
+Add Managed Path for My Site and enable Sefl-service creation.
+
+```powershell
+New-SPManagedPath -RelativeURL "personal" -WebApplication "https://sharepoint-my.modc.se/"
+$wa = Get-SPWebApplication "https://sharepoint-my.modc.se/"
+$wa.SelfServiceSiteCreationEnabled = $true
+$wa.Update()
+```
+
+Create the root site collection for Sharepoint and My Site.
+
+```powershell
+New-SPSite -Url "https://sharepoint.modc.se/" -Template STS#0 -Name "Team Site" -OwnerAlias "modc\siber-da"
+New-SPSite -Url "https://sharepoint-my.modc.se/" -Template SPSMSITEHOST#0 -Name "Team Site" -OwnerAlias "modc\siber-da"
+```
+
+Dont forget to create the A records in DNS.
+
+```powershell
+
 ```
