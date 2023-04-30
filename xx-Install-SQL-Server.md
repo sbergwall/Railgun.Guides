@@ -42,6 +42,43 @@ Add-WindowsFeature RSAT-AD-PowerShell
 
 Before we begin the installation of SQL Server we will verify that the server is configured correctly.
 
+### Prepare Disks
+
+If disks are attached to the VM but not initialized and formated we can run below. Note that we need to change the -PartitionNumber depending on which PartitionNumber the larger partition is.
+
+This should show you all available disks. 
+
+```powershell
+Get-Disk
+```
+
+In our example the Data disk (D:\) is number 1.
+
+```powershell
+$number = 1
+get-disk -Number $number | Clear-Disk -RemoveData -Confirm:$false
+Initialize-Disk -Number $number
+New-Partition -DiskNumber $number -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "SQL Data" -AllocationUnitSize 65536 -Confirm:$false
+Get-Partition -DiskNumber $number -PartitionNumber 2 | Set-Partition -NewDriveLetter D
+```
+
+If you are unsure which PartitionNumber you should use, see all available options. You will need to choose the largest of the partitions.
+
+```powershell
+Get-Partition -DiskNumber $number
+```
+
+If you are initializing the disks that is not used for SQL Data, Log or TempDb you can run
+
+```powershell
+$number = 5
+get-disk -Number $number | Clear-Disk -RemoveData -Confirm:$false
+Initialize-Disk -Number $number
+New-Partition -DiskNumber $number -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "Backup" -Confirm:$false
+Get-Partition -DiskNumber $number -PartitionNumber 2 | Set-Partition -NewDriveLetter Z
+
+```
+
 ### Disk Allocation Unit Size
 
 A good practice for disk allocation unit size for the data, log and TempDB disks are 64 KB (65536 bytes).
