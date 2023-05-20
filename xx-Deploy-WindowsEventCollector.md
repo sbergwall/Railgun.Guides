@@ -1,3 +1,7 @@
+## Best Practice
+No more than 2000-3000 assets per Collector server.
+
+In Event Viewer, right click on Forwarded Events and select Properties. Edit Maximum log size (KB) to something larger, at least 4GB.
 
 ## Configure the Collector Server
 Start Event Viewer and go to Subscriptions. Click Yes when asked if we want to work with subscriptions. This will configure and start the needed services.
