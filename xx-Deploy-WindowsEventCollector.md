@@ -30,7 +30,7 @@ Open Group Policy Management and create a new GP. Go to Computer Configureation 
 Go to System Services and set Windows remote Management to Automatic.
 
 Go to Administrative Templates > Windows Components> Event Forwarding and edit Configure fowarder resource usage. Enable it and choose between 100-500. 500 is for Production.
-Edit Configure target Subscrition Manager and click Enabled. Under SubscriptionManagers click SHow. Add 'Server=http://wec01.company.pri:5985/wsman/SubscriptionManager/WEC.Refresh=120'
+Edit Configure target Subscrition Manager and click Enabled. Under SubscriptionManagers click SHow. Add 'Server=http://wec01.company.pri:5985/wsman/SubscriptionManager/WEC,Refresh=120'. Note that before Refresh=120 there is a colon, not a dot.
 
 Go to Event Log Service and Security. Edut Configure log access, Enable it and add 'O:BAG:SYD:(A;;0xf0005;;;SY)(A;;0x5;;;BA)(A;;0x1;;;S-1-5-32-573)(A;;0x1;;;S-1-5-20)' without '' and the beginning at the end,  to Log Access.
 The GP is done. 
