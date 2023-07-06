@@ -2,14 +2,15 @@
 
 ## Links
 https://docs.microsoft.com/en-us/sharepoint/install/installing-sharepoint-server-subscription-edition-on-windows-server-core
-
+https://learn.microsoft.com/en-us/sharepoint/install/initial-deployment-administrative-and-service-accounts-in-sharepoint-server
+https://learn.microsoft.com/en-us/sharepoint/install/account-permissions-and-security-settings-in-sharepoint-server-2016
 
 ## Download 
 
 https://www.microsoft.com/en-us/download/details.aspx?id=103599
 
 SharePoint Server Standard Trial: KGN4V-82BMC-H383V-QJVFT-VCHJ7
-
+f
 SharePoint Server Enterprise Trial: VW2FM-FN9FT-H22J4-WV9GT-H8VKF
 
 Project Server Trial: WD6NX-PGRBH-3FQ88-BRBVC-8XFTV
@@ -248,6 +249,22 @@ New-SPMetadataServiceApplicationProxy -Name "Managed Metadata Service" -ServiceA
 ```
 
 ## Enterprise Search Service
+
+```powershell
+$sa = New-SPEnterpriseSearchServiceApplication -Name "Search Service Application" -DatabaseName "SP_Search" -ApplicationPool "SharePoint Web Services Default" -AdminApplicationPool "SharePoint Web Services Default"
+
+New-Spenterprisesearchserviceapplicationproxy -Name "Search Service Application" -searchapplication $sa
+$si = get-spenterprisesearchserviceinstance -local
+$clone = $sa.activetopology.clone()
+
+New-SPEnterpriseSearchAdminComponent -SearchTopology $clone -SearchServiceInstance $si
+New-SPEnterpriseSearchContentProcessingComponent -SearchTopology $clone -SearchServiceInstance $si
+New-SPEnterpriseSearchAnalyticsProcessingComponent -SearchTopology $clone -SearchServiceInstance $si
+New-SPEnterpriseSearchCrawlComponent -SearchTopology $clone -SearchServiceInstance $si
+New-SPEnterpriseSearchIndexComponent  -SearchTopology $clone -SearchServiceInstance $si -IndexPartition 0 -RootDirectory C:\SP_Search\Index -Verbose
+New-SPEnterpriseSearchQueryProcessingComponent -SearchTopology $clone -SearchServiceInstance $si
+```
+
 
 ## User Profile Service
 
