@@ -250,6 +250,8 @@ New-SPMetadataServiceApplicationProxy -Name "Managed Metadata Service" -ServiceA
 
 ## Enterprise Search Service
 
+https://social.technet.microsoft.com/Forums/en-US/27f7eaa4-93f1-47e6-997a-3485a29e6841/creating-search-service-application-in-sp-2016-using-powershell
+
 ```powershell
 $sa = New-SPEnterpriseSearchServiceApplication -Name "Search Service Application" -DatabaseName "SP_Search" -ApplicationPool "SharePoint Web Services Default" -AdminApplicationPool "SharePoint Web Services Default"
 
