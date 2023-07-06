@@ -250,6 +250,7 @@ New-SPMetadataServiceApplicationProxy -Name "Managed Metadata Service" -ServiceA
 
 ## Enterprise Search Service
 
+https://stackoverflow.com/questions/70557735/how-to-create-search-service-application-using-powershell-in-sharepoint-2019
 https://social.technet.microsoft.com/Forums/en-US/27f7eaa4-93f1-47e6-997a-3485a29e6841/creating-search-service-application-in-sp-2016-using-powershell
 
 ```powershell
