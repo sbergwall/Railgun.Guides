@@ -7,5 +7,5 @@ Add-AppxPackage -RegisterByFamilyName -MainPackage Microsoft.DesktopAppInstaller
 ```
 
 ```powershell
-"Git.Git","mRemoteNG.mRemoteNG"  |  foreach {winget install $_ --accept-package-agreements}
+"Git.Git","mRemoteNG.mRemoteNG","Microsoft.VisualStudioCode","Microsoft.PowerShell","Microsoft.AzureDataStudio","Microsoft.WindowsTerminal"  |  foreach {winget install $_ --accept-package-agreements}
 ```
