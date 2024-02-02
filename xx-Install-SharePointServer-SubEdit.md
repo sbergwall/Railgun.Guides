@@ -266,8 +266,17 @@ New-SPEnterpriseSearchAnalyticsProcessingComponent -SearchTopology $clone -Searc
 New-SPEnterpriseSearchCrawlComponent -SearchTopology $clone -SearchServiceInstance $si
 New-SPEnterpriseSearchIndexComponent  -SearchTopology $clone -SearchServiceInstance $si -IndexPartition 0 -RootDirectory C:\SP_Search\Index -Verbose
 New-SPEnterpriseSearchQueryProcessingComponent -SearchTopology $clone -SearchServiceInstance $si
+$clone.Activate()
+
+Get-SPEnterpriseSearchTopology -SearchApplication $sa | Where-Object {$_.state -eq "Inactive"} | Remove-SPEnterpriseSearchTopology 
 ```
 
+### Configure Search Service Access Account
+```powershell
+$sa = Get-SPEnterpriseSearchServiceApplication
+$content = New-Object Microsoft.office.server.search.administration.content($sa)
+$content.SetDefaultGatheringAccount("company\sp-crawl", (ConvertTo-SecureString "<Password>" -AsPlainText -Force))
+```
 
 ## User Profile Service
 
