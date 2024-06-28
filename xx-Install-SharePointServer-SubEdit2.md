@@ -484,6 +484,11 @@ New-SPWebApplication -Name "SharePoint MySites" -HostHeader spse-dev-my.company.
 
 Validate the IIS Bindings are correct on all servers and that the SSL certificate has been correctly selected. SharePoint may not set the SSL certificate for you. 
 
+```powershell
+Add-DnsServerResourceRecordA -Name "spse-dev" -IPv4Address 192.168.2.26 -ZoneName "company.pri" -ComputerName dc1
+Add-DnsServerResourceRecordA -Name "sspse-dev-my" -IPv4Address 192.168.2.26 -ZoneName "company.pri" -ComputerName dc1
+```
+
 To support Publishing sites, add the Portal Super User and Portal Super Reader to the SharePoint Web Application. These accounts are used for permission comparison purposes only and the password for these accounts is not required. If there is the possibility that a Publishing site may be created on the SharePoint MySite Web Application, add the accounts there as well. We must set the initial properties on the SharePoint Web Application via the SharePoint Management Shell.
 
 ```powershell
