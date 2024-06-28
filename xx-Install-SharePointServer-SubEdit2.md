@@ -484,6 +484,8 @@ New-SPWebApplication -Name "SharePoint MySites" -HostHeader spse-dev-my.company.
 
 Validate the IIS Bindings are correct on all servers and that the SSL certificate has been correctly selected. SharePoint may not set the SSL certificate for you. 
 
+Dont forget to create the A records in DNS.
+
 ```powershell
 Add-DnsServerResourceRecordA -Name "spse-dev" -IPv4Address 192.168.2.26 -ZoneName "company.pri" -ComputerName dc1
 Add-DnsServerResourceRecordA -Name "sspse-dev-my" -IPv4Address 192.168.2.26 -ZoneName "company.pri" -ComputerName dc1
