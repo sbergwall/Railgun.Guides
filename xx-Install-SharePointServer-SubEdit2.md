@@ -537,7 +537,7 @@ Remove-SPManagedPath -Identity "sites" -WebApplication https://spse-dev-my.compa
 Then, enable Self-Service Site Creation.
 
 ```powershell
-$wa = Get-SPWebApplication https://sp-my.cobaltatom.com
+$wa = Get-SPWebApplication https://spse-dev-my.company.pri
 $wa.SelfServiceSiteCreationEnabled = $true
 $wa.Update()
 ```
