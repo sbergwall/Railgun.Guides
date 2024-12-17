@@ -43,4 +43,12 @@ The GP is done.
 
 In the Collector, go to Subscription agan and see if there is any new Source Computers. If there isnt any we can force a GP Update on the servers with 'GPUpdate /force'. This will refresh the polocies.
 
+## Read More:
+* [Windows Event Forwarding and Event Collectors In-Depth (YouTube)](https://www.youtube.com/watch?v=gUOl82434Ic)
+* [BHIS | Intro to Windows Event Collecting | Nick & Noah | 1 Hour (YouTube)](https://www.youtube.com/watch?v=Eix5BPta56E)
+* []()
+
+
+
+
 
