@@ -23,7 +23,7 @@ https://docs.microsoft.com/en-us/sharepoint/install/account-permissions-and-secu
 SharePoint Farm Admin
 ```powershell
 $Name = "sp-farm"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Farm Admin" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@company.pri" -Description "SharePoint Farm Admin" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 
 $sharePointServer = "spse"
 Invoke-Command -ScriptBlock {Add-LocalGroupMember -Group Administrators -Member $using:name} -ComputerName $sharePointServer
@@ -32,43 +32,43 @@ Invoke-Command -ScriptBlock {Add-LocalGroupMember -Group Administrators -Member 
 SharePoint Service Application Pool Account
 ```powershell
 $Name = "sp-service"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Service Application Pool Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@company.pri" -Description "SharePoint Service Application Pool Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 ```
 
 SharePoint Web Application Pool Account
 ```powershell
 $Name = "sp-web"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Web Application Pool Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@company.pri" -Description "SharePoint Web Application Pool Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 ```
 
 Claims to Windows Token Service Account
 ```powershell
 $Name = "sp-c2wts"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "Claims to Windows Token Service Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@company.pri" -Description "Claims to Windows Token Service Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 ```
 
 User Profile Import Account
 ```powershell
 $Name = "sp-sync"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "User Profile Import Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@company.pri" -Description "User Profile Import Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 ```
 
 portal Super User Account 
 ```powershell
 $Name = "sp-superuser"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Portal Super User" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@company.pri" -Description "SharePoint Portal Super User" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 ```
 
 Portal supoer Readoner Account 
 ```powershell
 $Name = "sp-superread"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Portal Super Reader" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@company.pri" -Description "SharePoint Portal Super Reader" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 ```
 
 Seach Crawl Account
 ```powershell
 $Name = "sp-crawl"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Crawl Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@company.pri" -Description "SharePoint Crawl Account" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 ```
 
 ## Pre requirements
@@ -92,7 +92,7 @@ New-SPConfigurationDatabase -DatabaseName SP_Configuration -AdministrationConten
 Set up SPN for Central Administration 
 
 ```powershell
-setspn -S HTTP/ca.modc.se modc\sp-farm
+setspn -S HTTP/ca.company.pri modc\sp-farm
 ```
 
 Create Central Administration with Kerberos and without TLS.
@@ -104,13 +104,13 @@ New-SPCentralAdministration -WindowsAuthProvider Kerberos -SecureSocketsLayer:$T
 Change default Alternative Access Mapping
 
 ```powershell
-Set-SPAlternateUrl -Identity https://spse -Url https://ca.modc.se 
+Set-SPAlternateUrl -Identity https://spse -Url https://ca.company.pri 
 ```
 
 Create a Self Signed certificate if you dont have a PKI environment
 
 ```powershell
-New-SelfSignedCertificate -DnsName "ca.modc.se" -CertStoreLocation "cert:\LocalMachine\My"
+New-SelfSignedCertificate -DnsName "ca.company.pri" -CertStoreLocation "cert:\LocalMachine\My"
 ```
 
 Validate in IIS Manager that the site for Central Administation is using the certificate and that SNI is enabled. 
@@ -118,7 +118,7 @@ Validate in IIS Manager that the site for Central Administation is using the cer
 Create a A record in DNS for Central Administration
 
 ```powershell
-Add-DnsServerResourceRecordA -Name ca -IPv4Address 192.168.2.26 -ZoneName "modc.se" -ComputerName dc01
+Add-DnsServerResourceRecordA -Name ca -IPv4Address 192.168.2.26 -ZoneName "company.pri" -ComputerName dc01
 ```
 
 ## Enforce resource security on the local server.
@@ -301,18 +301,18 @@ Add the Sync account to domain permissions Replicating Directory Changes. Config
 If you want to use a self-signed certificate for the sites run
 
 ```powershell
-New-SelfSignedCertificate -DnsName "sharepoint.modc.se","sharepoint-my.modc.se" -CertStoreLocation "cert:\LocalMachine\My"
+New-SelfSignedCertificate -DnsName "sharepoint.company.pri","sharepoint-my.company.pri" -CertStoreLocation "cert:\LocalMachine\My"
 ```
 
 Set SPN and create web applications for SharePoint and My Site.
 
 ```powershell
-setspn -S http://sharepoint.modc.se modc\sp-web
-setspn -S http://sharepoint-my.modc.se modc\sp-web
+setspn -S http://sharepoint.company.pri modc\sp-web
+setspn -S http://sharepoint-my.company.pri modc\sp-web
 
 $ap = New-SPAuthenticationProvider -DisableKerberos:$false
-New-SPWebApplication -Name "SharePoint" -HostHeader "sharepoint.modc.se" -Port 443 -ApplicationPool "SharePoint" -ApplicationPoolAccount (Get-SPManagedAccount "modc\sp-web") -SecureSocketsLayer:$true -AuthenticationProvider $ap -DatabaseName "SP_Content_SharePoint_1" -Verbose
-New-SPWebApplication -Name "SharePoint MySites" -HostHeader "sharepoint-my.modc.se" -Port 443 -ApplicationPool "SharePoint" -SecureSocketsLayer:$true -AuthenticationProvider $ap -DatabaseName "SP_Content_SharePoint-My_1" -Verbose
+New-SPWebApplication -Name "SharePoint" -HostHeader "sharepoint.company.pri" -Port 443 -ApplicationPool "SharePoint" -ApplicationPoolAccount (Get-SPManagedAccount "modc\sp-web") -SecureSocketsLayer:$true -AuthenticationProvider $ap -DatabaseName "SP_Content_SharePoint_1" -Verbose
+New-SPWebApplication -Name "SharePoint MySites" -HostHeader "sharepoint-my.company.pri" -Port 443 -ApplicationPool "SharePoint" -SecureSocketsLayer:$true -AuthenticationProvider $ap -DatabaseName "SP_Content_SharePoint-My_1" -Verbose
 ```
 
 After creating the web application, verify that bindings in IIS are correct and the correct certificate are bound. 
@@ -320,8 +320,8 @@ After creating the web application, verify that bindings in IIS are correct and 
 Add Managed Path for My Site and enable Self-service creation.
 
 ```powershell
-New-SPManagedPath -RelativeURL "personal" -WebApplication "https://sharepoint-my.modc.se/"
-$wa = Get-SPWebApplication "https://sharepoint-my.modc.se/"
+New-SPManagedPath -RelativeURL "personal" -WebApplication "https://sharepoint-my.company.pri/"
+$wa = Get-SPWebApplication "https://sharepoint-my.company.pri/"
 $wa.SelfServiceSiteCreationEnabled = $true
 $wa.Update()
 ```
@@ -329,33 +329,33 @@ $wa.Update()
 Create the root site collection for Sharepoint and My Site.
 
 ```powershell
-New-SPSite -Url "https://sharepoint.modc.se/" -Template STS#3 -Name "Team Site" -OwnerAlias "modc\siber-da"
-New-SPSite -Url "https://sharepoint-my.modc.se/" -Template SPSMSITEHOST#0 -Name "Team Site" -OwnerAlias "modc\siber-da"
+New-SPSite -Url "https://sharepoint.company.pri/" -Template STS#3 -Name "Team Site" -OwnerAlias "modc\siber-da"
+New-SPSite -Url "https://sharepoint-my.company.pri/" -Template SPSMSITEHOST#0 -Name "Team Site" -OwnerAlias "modc\siber-da"
 ```
 
 Dont forget to create the A records in DNS.
 
 ```powershell
-Add-DnsServerResourceRecordA -Name "sharepoint" -IPv4Address 192.168.2.26 -ZoneName "modc.se" -ComputerName dc01
-Add-DnsServerResourceRecordA -Name "sharepoint-my" -IPv4Address 192.168.2.26 -ZoneName "modc.se" -ComputerName dc01
+Add-DnsServerResourceRecordA -Name "sharepoint" -IPv4Address 192.168.2.26 -ZoneName "company.pri" -ComputerName dc01
+Add-DnsServerResourceRecordA -Name "sharepoint-my" -IPv4Address 192.168.2.26 -ZoneName "company.pri" -ComputerName dc01
 ```
 
 Configure the Portal Super User and Portal Super Reader. Start by creating the domain accounts and then add them to the Web Application.
 
 ```powershell
 $Name = "sp-superread"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Portal Super Reader" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@company.pri" -Description "SharePoint Portal Super Reader" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 
 $Name = "sp-superuser"
-New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@modc.se" -Description "SharePoint Portal Super User" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
+New-ADUser -Name $Name -SamAccountName $name -UserPrincipalName "$name@company.pri" -Description "SharePoint Portal Super User" -Enabled $true -PasswordNeverExpires $true -AccountPassword (Read-Host -AsSecureString "Password") -CannotChangePassword $false -Path "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
 
-$wa =Get-SPWebApplication https://sharepoint.modc.se/
+$wa =Get-SPWebApplication https://sharepoint.company.pri/
 $wa.Properties["portalsuperuseraccount"] = "i:0#.w|modc\sp-superuser"
 $wa.Properties["portalsuperreaderaccount"] = "i:0#.w|modc\sp-superread"
 $wa.Update()
 
 
-$wa = Get-SPWebApplication "https://sharepoint.modc.se/"  
+$wa = Get-SPWebApplication "https://sharepoint.company.pri/"  
 $zp = $wa.ZonePolicies("Default")
 $policy = $zp.Add("i:0#.w|modc\sp-superuser","Portal Super User")
 $policyRole = $wa.PolicyRoles.GetSpecialRole("FullControl")
@@ -378,7 +378,7 @@ foreach ($server in (Get-SPServer | where {$_.Role -ne "Invalid" -and $_.Role -n
 My Site Configuration
 ```powershell
 $sa =Get-SPServiceApplication | where {$_.TypeName -eq "User Profile Service Application"}
-Set-SPProfileServiceApplication -Identity $sa -MySiteHostLocation "https://sharepoint-my.modc.se/"
+Set-SPProfileServiceApplication -Identity $sa -MySiteHostLocation "https://sharepoint-my.company.pri/"
 ```
 
 ## Custom Tiles 
@@ -386,7 +386,7 @@ Set-SPProfileServiceApplication -Identity $sa -MySiteHostLocation "https://share
 https://docs.microsoft.com/en-us/sharepoint/administration/custom-tiles-in-sharepoint-server-2016
 
 ```powershell
-Enable-SPFeature -Identity CustomTiles -Url https://sharepoint.modc.se/ -Force
+Enable-SPFeature -Identity CustomTiles -Url https://sharepoint.company.pri/ -Force
 ```
 
-browse to https://sharepoint.modc.se/Lists/Custom%20Tiles/AllItems.aspx to access Custom tiles list.
+browse to https://sharepoint.company.pri/Lists/Custom%20Tiles/AllItems.aspx to access Custom tiles list.
