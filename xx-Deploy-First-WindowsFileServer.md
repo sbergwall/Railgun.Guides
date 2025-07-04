@@ -31,7 +31,7 @@ Restart-Computer -Force
 ```
 
 ```powershell
-$domainName = "modc.se"
+$domainName = "company.pri"
 add-computer –domainname $domainName  -restart
 ```
 
@@ -63,7 +63,7 @@ Enable-DedupVolume D:
 Create OU where we place groups for access to file services.
 
 ```powershell
-$Path = "OU=SecurityGroups,OU=Groups,OU=modc,DC=modc,DC=se"
+$Path = "OU=SecurityGroups,OU=Groups,OU=company,DC=company,DC=pri"
 New-ADOrganizationalUnit "File-Services" –path "$path"
 ```
 
@@ -74,8 +74,8 @@ New-ADOrganizationalUnit "File-Services" –path "$path"
 
 ```powershell
 mkdir D:\Data
-New-SmbShare -Name Data -Path D:\Data -FolderEnumerationMode AccessBased -CachingMode Documents -EncryptData $True -FullAccess "modc\Domain Admins" -ReadAccess "modc\Domain Users"
+New-SmbShare -Name Data -Path D:\Data -FolderEnumerationMode AccessBased -CachingMode Documents -EncryptData $True -FullAccess "company\Domain Admins" -ReadAccess "company\Domain Users"
 
 mkdir D:\System
-New-SmbShare -Name System -Path D:\System -FolderEnumerationMode AccessBased -CachingMode Documents -EncryptData $True -FullAccess "modc\Domain Admins" -ReadAccess "modc\Domain Users"
+New-SmbShare -Name System -Path D:\System -FolderEnumerationMode AccessBased -CachingMode Documents -EncryptData $True -FullAccess "company\Domain Admins" -ReadAccess "company\Domain Users"
 ```
