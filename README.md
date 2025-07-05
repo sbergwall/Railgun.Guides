@@ -29,7 +29,9 @@ A collection of deployment and configuration guides for enterprise infrastructur
    - Security group configuration
    - Password policy setup
    - Client deployment
-   - Maintenance and auditing
+   - Maintenance, auditing, troubleshooting, and GPO best practices
+   - Custom admin account creation
+   - Supported OS and update requirements
 
 ### Database Infrastructure
 5. [SQL Server Installation and Configuration](xx-Install-SQL-Server.md)
