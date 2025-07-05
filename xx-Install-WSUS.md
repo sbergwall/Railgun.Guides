@@ -50,30 +50,129 @@ To direct clients to your WSUS server, create or edit a GPO:
   - **Configure Automatic Updates:**
     - Set to your preferred schedule (e.g., auto download and schedule install)
 
-## 5. Policy Update
+## 5. Policy Update and Client Check-In
 
-If needed, run the following on member servers:
+If needed, run the following on member servers to update Group Policy:
 
 ```powershell
 gpupdate /force
 ```
 
-Verify with:
+Verify applied policies with:
 
 ```powershell
 gpresult /r
 ```
 
-## 6. Maintenance Recommendations
+### Force WSUS Client Check-In and Troubleshooting
+
+To force a client to check in with WSUS and trigger update detection/reporting, use the following steps. These commands can help troubleshoot clients that are not reporting or updating as expected.
+
+```powershell
+# Ensure the Windows Update service is running
+Start-Service wuauserv -Verbose
+
+# Create an update session and search for updates (optional, for troubleshooting)
+$updateSession = New-Object -ComObject Microsoft.Update.Session
+$updateSearcher = $updateSession.CreateUpdateSearcher()
+$searchResult = $updateSearcher.Search('IsInstalled=0')
+$searchResult.Updates | Select-Object -Property Title,IsInstalled
+
+# Wait for the update service to process
+Start-Sleep -Seconds 10
+
+# Trigger update detection and reporting
+wuauclt /detectnow
+wuauclt /reportnow
+
+# For Windows 10/11 and Server 2016+, use UsoClient (no output if successful):
+c:\windows\system32\UsoClient.exe startscan
+c:\windows\system32\UsoClient.exe startdownload
+c:\windows\system32\UsoClient.exe startinstall
+c:\windows\system32\UsoClient.exe refreshsettings
+
+# You can also trigger detection via PowerShell:
+(New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow()
+```
+
+**Notes:**
+- Some commands (like `wuauclt`) are deprecated in newer Windows versions but may still work for compatibility.
+- `UsoClient.exe` is the preferred tool for Windows 10/11 and Server 2016+.
+- Always run these commands in an elevated (Administrator) PowerShell session.
+- If clients do not report in, check firewall rules, GPO application, and WSUS server connectivity.
+
+
+## 6. Optimize and Maintain WSUS
+
+### IIS Application Pool (WsusPool) Settings
+
+To prevent performance issues and scan storms, adjust the following settings for the WsusPool in IIS Manager:
+
+| Setting Name                | Value         | Default   |
+| --------------------------- | ------------- | --------- |
+| Queue Length                | 2000          | 1000      |
+| Idle Time-out (minutes)     | 0             | 20        |
+| Ping Enabled                | False         | True      |
+| Private Memory Limit (KB)   | 0 (unlimited) | 1,843,200 |
+| Regular Time Interval (min) | 0             | 1740      |
+
+- Open **IIS Manager** > **Application Pools** > **WsusPool** > **Advanced Settings** to configure these values.
+- Disabling recycling and increasing memory/queue limits helps prevent client scan failures and HTTP 503 errors.
+
+### Decline Superseded Updates
+
+Download the script from [Microsoft Docs](https://learn.microsoft.com/en-us/troubleshoot/mem/configmgr/update-management/decline-superseded-updates) and save it as `Decline-SupersededUpdatesWithExclusionPeriod.ps1` on the WSUS server.
+
+```powershell
+# Example usage:
+.\Decline-SupersededUpdatesWithExclusionPeriod.ps1 -UpdateServer wsus1.company.pri -Port 8530
+```
+
+### Optimize WSUS Database and Server
+
+- Download the script from [GitHub - Optimize-WsusServer](https://github.com/awarre/Optimize-WsusServer) and save it as `Optimize-WsusServer.ps1`.
+- Install the SQLServer PowerShell module if not already present:
+
+```powershell
+Install-Module sqlserver
+```
+
+- Run the optimization script:
+
+```powershell
+.\Optimize-WsusServer.ps1 -FirstRun
+```
+
+If you encounter the error:
+> "Invoke-Sqlcmd : A connection was successfully established with the server, but then an error occurred during the pre-login handshake..."
+
+See [this GitHub pull request](https://github.com/awarre/Optimize-WsusServer/pull/19) for a fix. After applying the fix, rerun the script.
+
+- You can schedule these scripts for daily (server) and weekly (database) optimization.
+
+## 7. Automatic Update Approval
+
+In the WSUS console, go to **Options > Automatic Approvals** to configure rules. Example auto-approval rules:
+
+| Name                             | Type                                                    | Approved                             |
+| -------------------------------- | ------------------------------------------------------- | ------------------------------------ |
+| Definition Update - Auto Approve | When an update is in Definition Updates                 | Approve the update for all computers |
+| Default Automatic Approval Rule  | When an update is in Critical Updates, Security Updates | Approve the update for all computers |
+
+## 8. Maintenance Recommendations
 
 - Regularly approve and decline updates
 - Run the WSUS Cleanup Wizard monthly
 - Monitor disk space and database health
 - Back up the WSUS database and content
+- Periodically run optimization and supersedence scripts
 
 ## References
 
 - [Plan your WSUS deployment](https://learn.microsoft.com/en-us/windows-server/administration/windows-server-update-services/plan/plan-your-wsus-deployment)
 - [Install the WSUS server role](https://learn.microsoft.com/en-us/windows-server/administration/windows-server-update-services/deploy/1-install-the-wsus-server-role?tabs=powershell)
-- [WSUS Best Practices](https://learn.microsoft.com/en-us/windows-server/administration/windows-server-update-services/deploy/best-practices-wsus)
 - [WSUS YouTube Guide](https://www.youtube.com/watch?v=VTCzszyiFz4&list=PLRo_KKs_U-nMdcYRZDnQIVcf1mBc2if7d&index=2)
+- [The complete guide to WSUS and Configuration Manager SUP maintenance](https://learn.microsoft.com/en-us/troubleshoot/mem/configmgr/update-management/wsus-maintenance-guide#create-custom-indexes)
+- [Windows Server Update Services best practices](https://learn.microsoft.com/en-us/troubleshoot/mem/configmgr/update-management/windows-server-update-services-best-practices)
+- [GitHub - Optimize-WsusServer](https://github.com/awarre/Optimize-WsusServer)
+- [Patch My PC - The Simple Guide to WSUS Maintenance and Optimization in ConfigMgr](https://patchmypc.com/kb/simple-guide-wsus-maintenance-optimization/)
