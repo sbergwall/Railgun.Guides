@@ -5,9 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2025-05-24
+## [1.0.2] - 2025-07-05
 
 ### Added
+- Major cleanup and reorganization of documentation
+- New and improved SQL Server installation and configuration guide (`xx-Install-SQL-Server.md`)
+- Expanded WSUS, LAPS, and Windows 11 deployment documentation
+- Improved troubleshooting and maintenance sections for all major guides
+
+### Changed
+- Updated all domain and OU references to `company.pri` and `company`
+- Standardized naming and structure across all guides
+- Updated README Table of Contents to reflect current file set
+- Clarified and expanded best practices in SQL Server, WSUS, and LAPS guides
+
+### Removed
+- Deprecated and draft files no longer needed
+- Old/duplicate SQL Server, Windows 11, and LAPS guides
+- Unneeded scripts and documentation for legacy infrastructure
 
 ## [1.0.1] - 2025-05-24
 

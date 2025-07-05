@@ -31,15 +31,14 @@ A collection of deployment and configuration guides for enterprise infrastructur
    - Client deployment
    - Maintenance and auditing
 
-### Server Deployment Scripts
-- [Hyper-V VM Creation](01.Hyper-V-New-VM-Servers.ps1)
-- [Domain Controller Configuration](02.Hyper-V-Install-First-DC.ps1)
-- [SQL Server Deployment](07.Hyper-V-New-SQLServer.ps1)
-
 ### Database Infrastructure
-- SQL Server Installation
-- Always-On Availability Groups
-- [SQL Server Checklist](Checklist-SQLServer.md)
+5. [SQL Server Installation and Configuration](xx-Install-SQL-Server.md)
+   - Disk and OS preparation
+   - Service account creation
+   - Automated installation with DBAtools
+   - Post-installation best practices
+   - Maintenance and monitoring
+   - [SQL Server Checklist](Checklist-SQLServer.md)
 
 ### Application Infrastructure
 - SharePoint Server Subscription Edition
@@ -60,7 +59,8 @@ A collection of deployment and configuration guides for enterprise infrastructur
 2. Deploy [Windows Admin Center](02.%20Install-Windows-Admin-Center.md)
 3. Configure [Windows 11 clients](03.%20Install-Windows-11-Client.md)
 4. Implement [LAPS](04.%20Configure-LAPS.md)
-5. Continue with specific infrastructure components as needed
+5. Install and configure [SQL Server](xx-Install-SQL-Server.md)
+6. Continue with specific infrastructure components as needed
 
 ## Contributing
 
