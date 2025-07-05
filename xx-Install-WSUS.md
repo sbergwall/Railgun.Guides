@@ -106,6 +106,10 @@ c:\windows\system32\UsoClient.exe refreshsettings
 
 ### IIS Application Pool (WsusPool) Settings
 
+WSUS implements an internal cache that retrieves the update metadata from the database. This operation is expensive and very memory intensive. It can cause the IIS application pool that hosts WSUS (known as WSUSPool) to recycle when WSUSPool overruns the default private and virtual memory limits.
+
+When the pool recycles, the cache is removed and must be rebuilt. It isn't a large problem when clients are undergoing delta scans. But if you end up in a scan storm scenario, the pool will recycle constantly. And clients will receive errors when you make scan requests, such as HTTP 503 errors.
+
 To prevent performance issues and scan storms, adjust the following settings for the WsusPool in IIS Manager:
 
 | Setting Name                | Value         | Default   |
