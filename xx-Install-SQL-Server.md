@@ -359,3 +359,18 @@ GO
 
 Invoke-DbaQuery -Database msdb -Query $sql -SqlInstance $(hostname)
 ```
+
+### SQL Server Agent Jobs
+
+Links: https://blog.netnerds.net/2023/05/install-dbamaintenancesolution-now-supports-auto-scheduling/
+
+$params = @{
+    SqlInstance = "localhost"
+    ReplaceExisting = $true
+    InstallJobs = $true
+    CleanupTime = 720
+    AutoScheduleJobs = "DailyFull", "HourlyLog"
+    StartTime = "231500"
+}
+
+Install-DbaMaintenanceSolution @params -Verbose
