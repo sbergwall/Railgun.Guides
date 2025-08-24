@@ -1,28 +1,38 @@
 # Install SQL Server
 
-This guide provides steps how to install and configure a SQL Server.
+## Overview
+This document provides a step-by-step guide for installing and configuring SQL Server. It covers prerequisites, server preparation, installation, and post-installation configuration to ensure a robust and optimized SQL Server setup.
 
-## Before you begin
+## Prerequisites
+- Verify that all required disks are mounted and online:
+  - `D:\` (Data), `E:\` (Program), `F:\` (Backup), `L:\` (Log), and `T:\` (TempDB).
+- Ensure permissions in Active Directory for creating the service accounts.
+- Internet access for downloading required modules.
+- PowerShell installed on the server.
+- SQL Server installation media available.
 
-  * Verify that all needed disks are mounted. We need to have D:\ (Data), E:\ (Program), F:\ (Backup), L:\ (Log) and T:\ (TempDB) mounted and online.
-  * Permissions in Active Directory is needed for creating the service accounts
+---
 
+## Prepare PowerShell
 
-## Prepare Powershell
-
-Before we begin the installation of SQL Server we need to configure Powershell and installing a couple of modules.
+Before we begin the installation of SQL Server, we need to configure PowerShell and install a couple of modules.
 
 ### Execution Policy
 
-Set execution policy to bypass so we can run Powershell commands. If your restart Powershell during this guide you will need to run the below script again for each time Powershell is restarted.
+Set execution policy to bypass so we can run PowerShell commands. If you restart PowerShell during this guide, you will need to run the below script again each time PowerShell is restarted.
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force
 ```
 
-### Install DBAtools module
+#### Parameters:
+- **`-ExecutionPolicy`**: Specifies the new execution policy. `Bypass` allows scripts to run without restrictions.
+- **`-Scope`**: Defines the scope of the policy. `CurrentUser` applies the policy to the current user only.
+- **`-Force`**: Suppresses confirmation prompts.
 
-The DBAtools module will be used for installing SQL Server and configure the Availability Group. If a pop-up windows comes up with the text **NuGet provider is required to continue** select **Yes**.
+### Install DBAtools Module
+
+The DBAtools module will be used for installing SQL Server and configuring the Availability Group. If a pop-up window appears with the text **NuGet provider is required to continue**, select **Yes**.
 
 The client or server needs to have internet access for this to work.
 
@@ -30,13 +40,21 @@ The client or server needs to have internet access for this to work.
 If (!(Get-Module DBATools -ListAvailable)) {Install-Module DBATools -Scope CurrentUser -Force}
 ```
 
-### Install Active Directory module
+#### Parameters:
+- **`-ListAvailable`**: Checks if the module is already installed.
+- **`-Scope`**: Installs the module for the current user.
+- **`-Force`**: Forces the installation without confirmation.
 
-We will use the Active Directory module to create and configure the service account. If the installation is successfull you will se **Success** under **Exit Code**.
+### Install Active Directory Module
+
+We will use the Active Directory module to create and configure the service account. If the installation is successful, you will see **Success** under **Exit Code**.
 
 ```powershell
 Add-WindowsFeature RSAT-AD-PowerShell
 ```
+
+#### Parameters:
+- **`RSAT-AD-PowerShell`**: Specifies the feature to install, which includes the Active Directory PowerShell module.
 
 ## Prepare server
 
@@ -310,4 +328,4 @@ GO
 "@
 
 Invoke-DbaQuery -Database msdb -Query $sql -SqlInstance $(hostname)
-````
+```
