@@ -62,7 +62,7 @@ Before we begin the installation of SQL Server we will verify that the server is
 
 ### Prepare Disks
 
-If disks are attached to the VM but not initialized and formated we can run below. Note that we need to change the -PartitionNumber depending on which PartitionNumber the larger partition is.
+If disks are attached to the VM but not initialized and formatted, you can run the following script. Note that you need to change the `-PartitionNumber` depending on which partition number the larger partition is.
 
 This should show you all available disks. 
 
@@ -70,7 +70,10 @@ This should show you all available disks.
 Get-Disk
 ```
 
-In our example the Data disk (D:\) is number 1.
+#### Parameters:
+- **`Get-Disk`**: Lists all available disks on the system.
+
+In our example, the Data disk (`D:\`) is number 1.
 
 ```powershell
 $number = 1
@@ -79,6 +82,14 @@ Initialize-Disk -Number $number
 New-Partition -DiskNumber $number -UseMaximumSize | Format-Volume -FileSystem NTFS -NewFileSystemLabel "SQL Data" -AllocationUnitSize 65536 -Confirm:$false
 Get-Partition -DiskNumber $number -PartitionNumber 2 | Set-Partition -NewDriveLetter D
 ```
+
+#### Parameters:
+- **`-Number`**: Specifies the disk number to operate on.
+- **`Clear-Disk`**: Removes all data from the specified disk.
+- **`Initialize-Disk`**: Initializes the disk for use.
+- **`New-Partition`**: Creates a new partition on the disk.
+- **`Format-Volume`**: Formats the partition with the specified file system and label.
+- **`Set-Partition`**: Assigns a drive letter to the partition.
 
 If you are unsure which PartitionNumber you should use, see all available options. You will need to choose the largest of the partitions.
 
@@ -99,19 +110,31 @@ Get-Partition -DiskNumber $number -PartitionNumber 2 | Set-Partition -NewDriveLe
 
 ### Disk Allocation Unit Size
 
-A good practice for disk allocation unit size for the data, log and TempDB disks are 64 KB (65536 bytes).
+A good practice for disk allocation unit size for the data, log, and TempDB disks is 64 KB (65536 bytes).
 
 ```powershell
 Get-Volume | Select-Object FileSystemLabel,DriveLetter,DriveType,AllocationUnitSize | Format-Table -AutoSize
 ```
 
-Below script will reformat data, log and TempDB disks to correct size. Note that this script expect that D: is Data, L: is Log and T: is TempDB.
+#### Parameters:
+- **`Get-Volume`**: Retrieves information about the volumes on the system.
+- **`Select-Object`**: Filters and selects specific properties to display.
+- **`Format-Table`**: Formats the output as a table for better readability.
+
+Below script will reformat data, log, and TempDB disks to the correct size. Note that this script expects that `D:` is Data, `L:` is Log, and `T:` is TempDB.
 
 ```powershell
 Get-Volume -DriveLetter D | Format-Volume -AllocationUnitSize 65536 -NewFileSystemLabel "SQL Data" -Confirm:$false
 Get-Volume -DriveLetter L | Format-Volume -AllocationUnitSize 65536 -NewFileSystemLabel "SQL Log" -Confirm:$false
 Get-Volume -DriveLetter T | Format-Volume -AllocationUnitSize 65536 -NewFileSystemLabel "SQLTempDB" -Confirm:$false
 ```
+
+#### Parameters:
+- **`-DriveLetter`**: Specifies the drive letter of the volume to format.
+- **`Format-Volume`**: Formats the volume with the specified allocation unit size and label.
+- **`-AllocationUnitSize`**: Sets the allocation unit size for the volume.
+- **`-NewFileSystemLabel`**: Assigns a new label to the volume.
+- **`-Confirm`**: Suppresses confirmation prompts.
 
 ### Power Settings
 
@@ -121,30 +144,27 @@ The power plan on the VM should always be set to High Performance. This setting 
 Set-DbaPowerPlan -PowerPlan 'High Performance' -ComputerName $(hostname)
 ```
 
+#### Parameters:
+- **`-PowerPlan`**: Specifies the power plan to set. `High Performance` ensures optimal performance.
+- **`-ComputerName`**: Specifies the target computer for the power plan setting.
+
 ### Set Firewall Rules
 
 ```powershell
 New-DbaFirewallRule -SqlInstance localhost
 ```
 
+#### Parameters:
+- **`-SqlInstance`**: Specifies the SQL Server instance for which the firewall rule is created. `localhost` targets the local instance.
+
 ### Create Service Accounts
 
 We will need two service accounts for a standard SQL Server installation, one for the engine and one for the agent. This only needs to be done from one server.
 
-Note that if the user running the scripts is not in the same domain as the service account this will not work.
-
-Variables that needs to be changed
-
-  * $OU: Path of the OU or container where the new object is created
-  * $eDescription: Description of the Engine account
-  * $eDescription: Description of the Agent account
-
-Two pop-up windows will be shown, write the username and password for the Engine account in the first pop-up window and write the username and password for the Agent account in the second.
-
 ```powershell
-$OU = "OU=ServiceAccount,OU=Users,OU=modc,DC=modc,DC=se"
-$eDescription = "SQL Server Engine account for testnetag01"
-$aDescription = "SQL Server Agent account for testnetag01"
+$OU = "OU=ServiceAccount,OU=Users,OU=company,DC=company,DC=pri"
+$eDescription = "SQL Server Engine account for mssql1"
+$aDescription = "SQL Server Agent account for mssql1"
 
 $eCredential = Get-Credential -Message "Name and password for Engine Service Account"
 $aCredential = Get-Credential -Message "Name and password for Agent Service Account"
@@ -154,7 +174,17 @@ New-ADUser -SamAccountName $eCredential.UserName -Name $eCredential.UserName -Pa
 New-ADUser -SamAccountName $aCredential.UserName -Name $aCredential.UserName -Path $OU -Description $aDescription -CannotChangePassword $true -PasswordNeverExpires $true -AccountPassword $aCredential.Password -DisplayName $aCredential.UserName -Enabled $true -UserPrincipalName ($aCredential.UserName + "@" + $env:USERDNSDOMAIN)
 ```
 
-Do not make the service account a local administrator. SQL Server’s installer will automatically grant the least privileges required during setup.
+#### Parameters:
+- **`-SamAccountName`**: Specifies the logon name for the new user.
+- **`-Name`**: Sets the name of the user.
+- **`-Path`**: Defines the organizational unit (OU) where the user will be created.
+- **`-Description`**: Adds a description for the user account.
+- **`-CannotChangePassword`**: Prevents the user from changing the password.
+- **`-PasswordNeverExpires`**: Ensures the password does not expire.
+- **`-AccountPassword`**: Sets the password for the account.
+- **`-DisplayName`**: Specifies the display name for the user.
+- **`-Enabled`**: Enables the user account.
+- **`-UserPrincipalName`**: Sets the user principal name (UPN) for the account.
 
 
 ## Install SQL Server

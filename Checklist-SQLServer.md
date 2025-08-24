@@ -143,7 +143,7 @@ Set-DbaSpConfigure -Name CostThresholdForParallelism -Value 50
 #### Create a Mail Account
 
 ```powershell
-New-DbaDbMailAccount -Name $(hostname) -DisplayName $(hostname) -EmailAddress noreply@ltblekinge.se -MailServer smtp.ltblekinge.org -Force
+New-DbaDbMailAccount -Name $(hostname) -DisplayName $(hostname) -EmailAddress noreply@<YourDomain> -MailServer <YourSMTPServer> -Force
 
 ComputerName   : VOICE2
 InstanceName   : MSSQLSERVER
@@ -152,10 +152,10 @@ Id             : 2
 Name           : Voice2
 DisplayName    : Voice2
 Description    :
-EmailAddress   : noreply@ltblekinge.se
+EmailAddress   : noreply@<YourDomain>
 ReplyToAddress :
 IsBusyAccount  : False
-MailServers    : {smtp.ltblekinge.org}
+MailServers    : {<YourSMTPServer>}
 ```
 
 #### Create a Mail Profile
@@ -288,7 +288,7 @@ GO
 EXEC msdb.dbo.sp_add_operator @name=N'Dba',
 		@enabled=1,
 		@pager_days=0,
-		@email_address=N'simon.bergwall@regionblekinge.se'
+		@email_address=N'<YourMail>'
 GO
 "@
 
