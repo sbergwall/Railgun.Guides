@@ -1,8 +1,58 @@
-$credential = Get-Credential
-$connection = Connect-ProxmoxServer -Server "192.168.1.50" -Credential $credential -Realm "pam" -SkipCertificateValidation 
+# Proxmox Virtual Machine Deployment
+
+## Overview
+This document outlines the process for deploying virtual machines (VMs) in a Proxmox environment using PowerShell. The script automates the creation of multiple VMs with predefined configurations.
+
+## Prerequisites
+- A Proxmox server accessible on the network.
+- PowerShell installed on the client machine.
+- Required permissions to connect to the Proxmox server.
+- The `ProxmoxVE` PowerShell module installed.
+
+## Script Details
+
+### Connection Setup
+The script begins by establishing a connection to the Proxmox server:
+
+```powershell
+$credential = Get-Credential 
+$connection = Connect-ProxmoxServer -Server "192.168.1.50" -Credential $credential -Realm "pam" -SkipCertificateValidation
+```
+
+- **`Get-Credential`**: Prompts for user credentials.
+- **`Connect-ProxmoxServer`**: Connects to the Proxmox server using the provided credentials.
+
+### VM Creation
+The following command creates a VM named `mssql1`:
+
+```powershell
+New-ProxmoxVM -Name "mssql1" -Connection $connection -Node "proxmox01" -Memory 6144 -Cores 4 -DiskSize 100 -Storage "hpe_ssd" -NetworkModel "virtio" -NetworkBridge "vmbr0"
+```
+
+#### Parameters:
+- **`-Name`**: Specifies the name of the VM.
+- **`-Connection`**: Uses the established connection to the Proxmox server.
+- **`-Node`**: The Proxmox node where the VM will be created.
+- **`-Memory`**: Allocates 6144 MB of memory to the VM.
+- **`-Cores`**: Assigns 4 CPU cores to the VM.
+- **`-DiskSize`**: Sets the disk size to 100 GB.
+- **`-Storage`**: Specifies the storage location (`hpe_ssd`).
+- **`-NetworkModel`**: Configures the network model as `virtio`.
+- **`-NetworkBridge`**: Connects the VM to the `vmbr0` network bridge.
+
+## Notes
+- Ensure the Proxmox server is configured to accept connections from the client machine.
+- Modify the script parameters as needed to suit your environment.
+- Use the `-SkipCertificateValidation` flag cautiously in production environments.
+
+```powershell
+$credential = Get-Credential 
+$connection = Connect-ProxmoxServer -Server "192.168.1.50" -Credential $credential -Realm "pam" -SkipCertificateValidation
 
 New-ProxmoxVM -Name "dc1" -Connection $connection -Node "proxmox01" -Memory 2048 -Cores 2 -DiskSize 60 -Storage "hpe_ssd" -NetworkModel "virtio" -NetworkBridge "vmbr0" 
 New-ProxmoxVM -Name "wsus1" -Connection $connection -Node "proxmox01" -Memory 4096 -Cores 4 -DiskSize 150 -Storage "hpe_ssd" -NetworkModel "virtio" -NetworkBridge "vmbr0" 
 New-ProxmoxVM -Name "wac1" -Connection $connection -Node "proxmox01" -Memory 4096 -Cores 4 -DiskSize 60 -Storage "hpe_ssd" -NetworkModel "virtio" -NetworkBridge "vmbr0" 
 New-ProxmoxVM -Name "wec1" -Connection $connection -Node "proxmox01" -Memory 4096 -Cores 4 -DiskSize 100 -Storage "hpe_ssd" -NetworkModel "virtio" -NetworkBridge "vmbr0" 
-New-ProxmoxVM -Name "win11" -Connection $connection -Node "proxmox01" -Memory 6144 -Cores 4 -DiskSize 100 -Storage "hpe_ssd" -NetworkModel "virtio" -NetworkBridge "vmbr0" 
+New-ProxmoxVM -Name "win11" -Connection $connection -Node "proxmox01" -Memory 6144 -Cores 4 -DiskSize 100 -Storage "hpe_ssd" -NetworkModel "virtio" -NetworkBridge "vmbr0"
+New-ProxmoxVM -Name "mssql1" -Connection $connection -Node "proxmox01" -Memory 6144 -Cores 4 -DiskSize 100 -Storage "hpe_ssd" -NetworkModel "virtio" -NetworkBridge "vmbr0"
+```
