@@ -1,0 +1,15 @@
+<!-- _sidebar.md -->
+- [Home](/)
+- Core Infrastructure
+  - [Install First Domain Controller](CoreInfrastructure/01.Install-First-Domain-Controller.md)
+  - [Configure LAPS](CoreInfrastructure/04.Configure-LAPS.md)
+  - [Install WSUS](CoreInfrastructure/05.Install-WSUS.md)
+- Client Management
+  - [Install Windows 11 Client](ClientManagement/03.Install-Windows-11-Client.md)
+- Hypervisor
+  - [Proxmox New VM](Hypervisor/Proxmox-NewVM.md)
+- Application Servers
+  - [Install Windows Admin Center](ApplicationServers/02.Install-Windows-Admin-Center.md)
+  - [Install SQL Server](ApplicationServers/xx-Install-SQL-Server.md)
+- Checklists
+  - [SQL Server Checklist](Checklists/Checklist-SQLServer.md)
