@@ -5,8 +5,7 @@
   - [Proxmox New VM](1.0%20Hypervisor/1.1%20Proxmox-NewVM.md)
 
 - **Core Infrastructure**
-  - **Active Directory**
-    - [Install First Domain Controller](2.0%20Core%20Infrastructure/Active%20Directory/2.01.%20Install-First-Domain-Controller.md)
+  - [Install First Domain Controller](2.0%20Core%20Infrastructure/2.01.%20Install-First-Domain-Controller.md)
   - [Install Windows Admin Center](2.0%20Core%20Infrastructure/2.02.%20Install-Windows-Admin-Center.md)
   - [Configure LAPS](2.0%20Core%20Infrastructure/2.04.%20Configure-LAPS.md)
   - [Install WSUS](2.0%20Core%20Infrastructure/2.05.%20Install-WSUS.md)
