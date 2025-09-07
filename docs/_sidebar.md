@@ -14,10 +14,10 @@
   - [Deploy First Windows File Server](2.0%20Core%20Infrastructure/2.8.1%20Deploy-First-WindowsFileServer.md)
 
 - **Client Management**
-  - [Install Windows 11 Client](3.0%20Client%20Management/3.03.%20Install-Windows-11-Client.md)
+  - [Install Windows 11 Client](3.0%20Client%20Management/3.1.1%20Install-Windows-11-Client.md)
 
 - **Application Services**
-  - [Install SQL Server](4.0%20Application%20Services/4.01-Install-SQL-Server.md)
-  - [Deploy AOAG](4.0%20Application%20Services/4.02-Deploy-AOAG.md)
-  - [Install SharePoint Server](4.0%20Application%20Services/4.03-Install-SharePointServer-SubEdit2.md)
+  - [Install SQL Server](4.0%20Application%20Services/4.1.1%20Install-SQL-Server.md)
+  - [Deploy AOAG](4.0%20Application%20Services/4.1.2%20Deploy-AOAG.md)
+  - [Install SharePoint Server](4.0%20Application%20Services/4.2.1-Install-SharePointServer-SubEdit2.md)
 
