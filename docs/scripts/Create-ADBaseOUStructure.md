@@ -1,3 +1,4 @@
+```powershell
 # Requires the Active Directory module for Windows PowerShell
 Import-Module ActiveDirectory
 
@@ -69,3 +70,4 @@ foreach ($function in $functionSubOUs) {
 }
 
 Write-Host 'Script execution complete.'
+```

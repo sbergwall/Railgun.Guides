@@ -1,3 +1,4 @@
+```powershell
 function New-Tier1SystemOU {
     [CmdletBinding()]
     param (
@@ -43,3 +44,4 @@ function New-Tier1SystemOU {
     
     Write-Host "Finished creating OU structure for '$SystemName'."
 }
+```
