@@ -22,6 +22,6 @@
   - [Install SharePoint Server](4.0%20Application%20Services/4.2.1-Install-SharePointServer-SubEdit2.md)
 
 - **Scripts**
-  - [Create AD Base OU Structure](scripts/Create-ADBaseOUStructure.ps1)
-  - [New Tier 1 System OU](scripts/New-Tier1SystemOU.ps1)
+  - [Create AD Base OU Structure](scripts/Create-ADBaseOUStructure.md)
+  - [New Tier 1 System OU](scripts/New-Tier1SystemOU.md)
 
