@@ -2,7 +2,7 @@
 - [Home](/)
 
 - **Hypervisor**
-  - [Proxmox New VM](1.0%20Hypervisor/1.1%20Proxmox-NewVM.md)
+  - [Proxmox New VM](1.0%20Hypervisor/1.1.1%20Proxmox-NewVM.md)
 
 - **Core Infrastructure**
   - [Install First Domain Controller](2.0%20Core%20Infrastructure/2.1.1.%20Install-First-Domain-Controller.md)
