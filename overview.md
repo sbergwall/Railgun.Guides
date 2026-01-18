@@ -13,3 +13,4 @@
 | sp1 | 192.168.20.35 | SharePoint Server |
 | db2 | 192.168.20.36 | MS SQL Server Node 2 |
 | ag1 | 192.168.20.37 | SQL AOAG Listener |
+| ex1 | 192.168.20.38 | Exchange Server |
